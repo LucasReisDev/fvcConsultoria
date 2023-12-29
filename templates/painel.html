@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo FVC - Consultoria</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #333; }
+        h1 { background-color: #333; color: #fff; padding: 20px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #333; color: #fff; }
+        p { padding: 20px; background-color: #fff; box-shadow: 0px 0px 5px rgba(0,0,0,0.1); margin-bottom: 10px; }
+        p:last-child { margin-bottom: 0; }
+    </style>
+</head>
+<body>
+    <h1>Bem-vindo ao Painel de Administração</h1>
+    <table>
+        <tr>
+            <th>Nome</th>
+            <td>{{ nome }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ email }}</td>
+        </tr>
+        <tr>
+            <th>CPF</th>
+            <td>{{ cpf }}</td>
+        </tr>
+        <tr>
+            <th>Status de pagamento</th>
+            <td>{{ status_pagamento }}</td>
+        </tr>
+    </table>
+</body>
+</html>

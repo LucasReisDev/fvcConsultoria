@@ -1,0 +1,36 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
+
+.payment-section {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.payment-section h2 {
+    color: #333;
+}
+
+/* Adicione estilos específicos para cada seção de pagamento conforme necessário */
+#pix-section {
+    background-color: yellow;
+}
+
+#boleto-section {
+    background-color: yellow;
+}
+
+#cartao-section {
+    background-color: yellow;
+}

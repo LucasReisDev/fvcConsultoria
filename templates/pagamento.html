@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Pagamento FVC</title>
+    <link rel="shortcut icon" href="/static/images/logos/logo.png" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <header>
+        <div>
+            <img style="width: 10%;" src="/static/images/logos/logo.png" alt="">
+        </div>
+    </header>
+    <section class="payment-section" id="pix-section">
+        <div >
+            <h2 style="align-items: center;">Pagamento via Pix</h2>
+            <p>Escaneie o QR code abaixo para realizar o pagamento:</p>
+            <p>Ou utilize o copia e cola a baixo QR code<span class="pix-key"></span></p>
+            <img  style="height: 30%; width: 20%; margin-left: 80px;" src="/static/images/WhatsApp Image 2023-12-22 at 14.44.58.jpeg" alt="">
+
+        </div>
+        <button style="align-items: center; margin-left: 90px;">
+            Copiar codigo
+        </button>
+    </section>
+    <section class="payment-section" id="boleto-section">
+        <div>
+            <h2>Pagamento via Boleto</h2>
+            <p>Para pagar via boleto, clique no link abaixo:</p>
+            <a href="#" class="boleto-link">Gerar Boleto</a>
+            <!-- Adicione mais instruções ou formulário de geração de boleto conforme necessário -->
+        </div>
+    </section>
+    <section class="payment-section" id="cartao-section">
+        <div>
+            <h2>Pagamento via Cartão de Crédito</h2>    
+            <form method="post" name="formCard" id="formCard" action="">
+                <div class="col-6 m-auto">
+                    <input type="text" name="publicKey" id="publicKey">
+                    <input type="text" name="encriptedCard" id="encriptedCard">
+                    <input type="text" class="form-control" name="cardNumber" id="cardNumber" maxlength="16" placeholder="Número do Cartão">
+                    <input type="text" class="form-control" name="cardHolder" id="cardHolder" placeholder="Nome no Cartão">
+                    <input type="text" class="form-control" name="cardMonth" id="cardMonth" maxlength="2" placeholder="Mês de Validade do Cartão">
+                    <input type="text" class="form-control" name="cardYear" id="cardYear" maxlength="4" placeholder="Ano do Cartão">
+                    <input type="text" class="form-control" name="cardCvv" id="cardCvv" maxlength="4" placeholder="CVV do Cartão">
+                    <input type="submit" class="btn btn-primary" value="Pagar">
+                </div>
+            </form>
+
+            </form>
+            </div>
+            
+    </section>
+
+    <script>
+     src="https://assets.pagseguro.com.br/checkout-sdk-js/rc/dist/browser/pagseguro.min.js" 
+     
+        // Quando o documento estiver totalmente carregado
+        document.addEventListener('DOMContentLoaded', function () {
+            // Seleciona os elementos do DOM
+            var openModalBtn = document.getElementById('openModalBtn');
+            var closeModalBtn = document.getElementById('closeModalBtn');
+            var modal = document.getElementById('myModal');
+            var modalContent = document.getElementById('modalContent');
+            var paymentForm = document.getElementById('paymentForm');
+    
+            // Adiciona um ouvinte de evento para abrir o modal quando o botão for clicado
+            openModalBtn.addEventListener('click', function () {
+                // Preenche o conteúdo do modal com as informações do formulário
+                modalContent.innerHTML = '<p>Nome no Cartão: ' + paymentForm.name.value + '</p>' +
+                                         '<p>CPF: ' + paymentForm.cpf.value + '</p>' +
+                                         '<p>Número do Cartão: ' + paymentForm.card_number.value + '</p>' +
+                                         '<p>Data de Validade: ' + paymentForm.expiry_date.value + '</p>' +
+                                         '<p>Código de Segurança: ' + paymentForm.security_code.value + '</p>';
+                // Exibe o modal
+                modal.style.display = 'block';
+            });
+    
+            // Adiciona um ouvinte de evento para fechar o modal quando o botão de fechar for clicado
+            closeModalBtn.addEventListener('click', function () {
+                // Oculta o modal
+                modal.style.display = 'none';
+            });
+        });
+
+        document.getElementById('payment-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Previne o comportamento padrão do formulário
+
+            // Envio do formulário via AJAX
+            fetch('/pagamento_credito', {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(data.message);
+                } else {
+                    console.log('Erro: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,14 +1,16 @@
-from flask import Flask, render_template, redirect, url_for, request, jsonify
+from flask import Flask, render_template, redirect, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from pagseguro import PagSeguro
+# from pagseguro import PagSeguro
 from flask_migrate import Migrate
 import requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///clientes.db'
 db = SQLAlchemy(app)
-pagseguro = PagSeguro(email='viccari215@gmail.com', token='B73EBD2ACECE64B2245D5FB20A5848C6')
+# pagseguro = PagSeguro(email='viccari215@gmail.com',
+# token='B73EBD2ACECE64B2245D5FB20A5848C6')
 migrate = Migrate(app, db)
+
 
 class Cliente(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +26,7 @@ class Cliente(db.Model):
 def index():
     return render_template('index.html')
 
+
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
     data = request.json
@@ -31,27 +34,36 @@ def cadastro():
     email = data.get('email')
     cpf = data.get('cpf')
 
-    novo_cliente = Cliente(nome=nome, email=email, cpf=cpf, status_pagamento=False)
+    print(nome)
+    print(email)
+    print(cpf)
+
+    novo_cliente = Cliente(
+        nome=nome, email=email, cpf=cpf, status_pagamento=False)
     db.session.add(novo_cliente)
     db.session.commit()
 
-    # Redireciona para a rota de pagamento
-    return redirect(url_for('/pagamento'))
+    # # Redireciona para a rota de pagamento
+    return redirect('/pagamento')
+
 
 @app.route('/admin', methods=['GET'])
 def admin():
-     # Recuperar todos os clientes do banco de dados
+    # Recuperar todos os clientes do banco de dados
     clientes = Cliente.query.all()
 
     # Renderizar a página admin com a lista de clientes
     return render_template('painel.html', clientes=clientes)
 
+
 @app.route('/pagamento')
 def pagamento():
-    return render_template('pagamento.html') 
+    return render_template('pagamento.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 @app.route('/pagamento_credito', methods=['POST'])
 def pagamento_credito():
@@ -66,11 +78,11 @@ def pagamento_credito():
     print(cartao_cvv)
 
     # Configuração dos dados do pedido
-    url_pagseguro = 'https://sandbox.pagseguro.uol.com.br'  # Substitua pela URL real da API do PagSeguro
-    valor_a_cobrar = 24,99
+    url_pagseguro = 'https://sandbox.pagseguro.uol.com.br'
+    valor_a_cobrar = 24.99
 
     headers = {
-        'Authorization': f'Bearer EB0181986A27440FAB1822445585C884',
+        'Authorization': 'Bearer EB0181986A27440FAB1822445585C884',
         'Content-Type': 'application/json'
     }
 
@@ -79,7 +91,7 @@ def pagamento_credito():
         'expMonth': cartao_mes,
         'expYear': cartao_ano,
         'securityCode': cartao_cvv,
-        'value':valor_a_cobrar,
+        'value': valor_a_cobrar,
         # Mais detalhes do pedido aqui, dependendo da API do PagSeguro
     }
 
@@ -88,10 +100,13 @@ def pagamento_credito():
 
     # Verifica a resposta da requisição
     if response.status_code == 200:
-        return jsonify({'success': True, 'message': 'Pagamento realizado' })
+        return jsonify({'success': True, 'message': 'Pagamento realizado'})
     else:
-        return jsonify({'success': False, 'message': 'Erro ao realizar o pagamento.'})
-    
+        return jsonify({
+            'success': False,
+            'message': 'Erro ao realizar o pagamento.'
+        })
+
 
 if __name__ == '__main__':
     db.create_all()

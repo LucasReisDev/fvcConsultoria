@@ -249,30 +249,29 @@ body {font-size:16px;}
 
 <script>
 function redirecionarParaPagamento() {
-    // Exibir o modal de informações do cliente
     $('#modalCliente').modal('show');
 }
 
 function enviarInformacoesCliente() {
-    // Obter os dados do modal
-    var nome = $('#nomeCliente').val();
-    var email = $('#emailCliente').val();
-    var cpf = $('#cpfCliente').val();
+    const nome = $('#nomeCliente').val();
+    const email = $('#emailCliente').val();
+    const cpf = $('#cpfCliente').val();
 
-    // Enviar dados para o servidor via AJAX
-    $.ajax({
-        type: 'POST',
-        url: '/cadastro',
-        contentType: 'application/json;charset=UTF-8',
-        data: JSON.stringify({ nome: nome, email: email, cpf: cpf }),
-        success: function(response) {
-            // Redirecionar para a página de pagamento após o sucesso
-            window.location.href = '/pagamento?nome=' + nome + '&email=' + email + '&cpf=' + cpf;
+    fetch('/cadastro', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8'
         },
-        error: function(error) {
-            console.error('Erro ao enviar dados do cliente:', error);
-            // Adicione o código de manipulação de erro, se necessário
+        body: JSON.stringify({ nome: nome, email: email, cpf: cpf })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao enviar dados do cliente');
         }
+        window.location.href = '/pagamento?nome=' + nome + '&email=' + email + '&cpf=' + cpf;
+    })
+    .catch(error => {
+        console.error('Erro ao enviar dados do cliente:', error);
     });
 }
   

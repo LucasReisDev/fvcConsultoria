@@ -12,27 +12,136 @@
         th { background-color: #333; color: #fff; }
         p { padding: 20px; background-color: #fff; box-shadow: 0px 0px 5px rgba(0,0,0,0.1); margin-bottom: 10px; }
         p:last-child { margin-bottom: 0; }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: black;
+            text-align: center;
+        }
+        td {
+            color: white;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <h1>Bem-vindo ao Painel de Administração</h1>
     <table>
-        <tr>
-            <th>Nome</th>
-            <td>{{ nome }}</td>
-        </tr>
-        <tr>
-            <th>Email</th>
-            <td>{{ email }}</td>
-        </tr>
-        <tr>
-            <th>CPF</th>
-            <td>{{ cpf }}</td>
-        </tr>
-        <tr>
-            <th>Status de pagamento</th>
-            <td>{{ status_pagamento }}</td>
-        </tr>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>CPF</th>
+                <th>Status de pagamento</th>
+                <th>/</th>
+            </tr>
+        </thead>
+
+        <tbody id="list-users">
+
+        </tbody>
     </table>
+
+    <script>
+        let users = [];
+        const containerUsers = document.getElementById('list-users');
+
+        function deleteUser(cpf) {
+            fetch(`/users/${cpf}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json;charset=UTF-8'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao deletar usuário');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data.message);
+                // Depois de deletar o usuário com sucesso, atualize a tabela
+                getUsers();
+            })
+            .catch(error => {
+                console.error('Erro ao deletar usuário:', error);
+            });
+        }
+
+        function populatingTbody(userList) {
+            while (containerUsers.firstChild) {
+                containerUsers.removeChild(containerUsers.firstChild);
+            }
+
+            userList.forEach((user) => {
+                const row = document.createElement('tr');
+
+                const idUser = document.createElement('td');
+                idUser.textContent = user.id;
+                row.appendChild(idUser);
+
+                const nameUser = document.createElement('td');
+                nameUser.textContent = user.nome;
+                row.appendChild(nameUser);
+
+                const emailUser = document.createElement('td');
+                emailUser.textContent = user.email;
+                row.appendChild(emailUser);
+
+                const cpfUser = document.createElement('td');
+                cpfUser.textContent = user.cpf;
+                row.appendChild(cpfUser);
+
+                const statusUser = document.createElement('td');
+                statusUser.textContent = user.status_pagamento;
+                row.appendChild(statusUser);
+
+                const deleteButton = document.createElement('td');
+                const button = document.createElement('button');
+                button.textContent = "Deletar";
+                button.addEventListener('click', () => {
+                    deleteUser(user.cpf);
+                });
+                deleteButton.appendChild(button);
+                row.appendChild(deleteButton);
+
+                containerUsers.appendChild(row)
+            })
+        }
+
+        function getUsers() {
+            fetch('/users', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json;charset=UTF-8'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao enviar dados do cliente');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data)
+                populatingTbody(data);
+            })
+            .catch(error => {
+                console.error('Erro ao buscar usuários:', error);
+            });
+        }
+
+        getUsers();
+
+    </script>
 </body>
 </html>

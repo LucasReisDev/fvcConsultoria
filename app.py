@@ -56,6 +56,42 @@ def admin():
     return render_template('painel.html', clientes=clientes)
 
 
+# Listar usuários
+@app.route('/users', methods=['GET'])
+def getUsers():
+    allUsers = Cliente.query.all()
+
+    serialized_users = []
+    for user in allUsers:
+        serialized_user = {
+            'id': user.id,
+            'nome': user.nome,
+            'email': user.email,
+            'cpf': user.cpf,
+            'status_pagamento': user.status_pagamento
+        }
+        serialized_users.append(serialized_user)
+
+    return serialized_users
+
+
+# Deletar usuário
+@app.route('/users/<cpf>', methods=['DELETE'])
+def delete_user(cpf):
+    # Procura o usuário pelo CPF
+    user = Cliente.query.filter_by(cpf=cpf).first()
+
+    if user:
+        # Remove o usuário do banco de dados
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({'message': f'Usuário com CPF {cpf} foi removido'})
+    else:
+        return jsonify({
+            'message': f'Usuário com CPF {cpf} não encontrado'
+        }), 404
+
+
 @app.route('/pagamento')
 def pagamento():
     return render_template('pagamento.html')

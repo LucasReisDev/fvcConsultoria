@@ -1,8 +1,8 @@
-from flask import Flask, render_template, redirect, url_for,request,jsonify
-import requests
-from pagseguro import PagSeguro
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from pagseguro import PagSeguro
 from flask_migrate import Migrate
+import requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///clientes.db'
@@ -15,41 +15,43 @@ class Cliente(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     cpf = db.Column(db.String(14), nullable=False)
-    status_pagamento = db.Column(db.Boolean, default=False)  # Adicionado campo de status de pagamento
+    status_pagamento = db.Column(db.Boolean, default=False)
 
-with app.app_context():
-    db.create_all()
+# Criação do banco de dados fora do escopo da aplicação
 
-@app.route('/', methods=['GET', 'POST'])
+
+@app.route('/')
 def index():
-    if request.method == 'POST':
-        data = request.json
-        nome = data.get('nome')
-        email = data.get('email')
-        cpf = data.get('cpf')
-
-        novo_cliente = Cliente(nome=nome, email=email, cpf=cpf, status_pagamento=False)
-        db.session.add(novo_cliente)
-        db.session.commit()
-
-        return redirect(url_for('pagamento'))
-    
     return render_template('index.html')
 
-@app.route('/admin', methods=['GET', 'POST'])
-def admin():
-    # Recuperar os dados do cliente da query string
-    nome_cliente = request.args.get('nome', '')
-    email_cliente = request.args.get('email', '')
-    cpf_cliente = request.args.get('cpf', '')
+@app.route('/cadastro', methods=['POST'])
+def cadastro():
+    data = request.json
+    nome = data.get('nome')
+    email = data.get('email')
+    cpf = data.get('cpf')
 
-    # Renderizar a página admin com os dados do cliente
-    return render_template('painel.html', nome=nome_cliente, email=email_cliente, cpf=cpf_cliente)
+    novo_cliente = Cliente(nome=nome, email=email, cpf=cpf, status_pagamento=False)
+    db.session.add(novo_cliente)
+    db.session.commit()
+
+    # Redireciona para a rota de pagamento
+    return redirect(url_for('/pagamento'))
+
+@app.route('/admin', methods=['GET'])
+def admin():
+     # Recuperar todos os clientes do banco de dados
+    clientes = Cliente.query.all()
+
+    # Renderizar a página admin com a lista de clientes
+    return render_template('painel.html', clientes=clientes)
 
 @app.route('/pagamento')
 def pagamento():
-
     return render_template('pagamento.html') 
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 @app.route('/pagamento_credito', methods=['POST'])
 def pagamento_credito():
@@ -92,4 +94,5 @@ def pagamento_credito():
     
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True)

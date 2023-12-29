@@ -251,16 +251,29 @@ body {font-size:16px;}
 function redirecionarParaPagamento() {
     // Exibir o modal de informações do cliente
     $('#modalCliente').modal('show');
-
-    // Você pode adicionar código adicional aqui para enviar os dados do cliente para o servidor se necessário
 }
 
-// Adicione essa função para chamar quando o cliente enviar as informações do modal
 function enviarInformacoesCliente() {
-    // Adicione código aqui para enviar as informações do cliente para o servidor
+    // Obter os dados do modal
+    var nome = $('#nomeCliente').val();
+    var email = $('#emailCliente').val();
+    var cpf = $('#cpfCliente').val();
 
-    // Redirecionar para a página de pagamento após enviar as informações
-    window.location.href = '/pagamento';
+    // Enviar dados para o servidor via AJAX
+    $.ajax({
+        type: 'POST',
+        url: '/cadastro',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify({ nome: nome, email: email, cpf: cpf }),
+        success: function(response) {
+            // Redirecionar para a página de pagamento após o sucesso
+            window.location.href = '/pagamento?nome=' + nome + '&email=' + email + '&cpf=' + cpf;
+        },
+        error: function(error) {
+            console.error('Erro ao enviar dados do cliente:', error);
+            // Adicione o código de manipulação de erro, se necessário
+        }
+    });
 }
   
 // Script to open and close sidebarlucasvo
@@ -314,33 +327,7 @@ function autoSlide() {
 autoSlide();
 
 
-function enviarInformacoesCliente() {
-  // Get the form data
-  const nomeCliente = document.getElementById('nomeCliente').value;
-  const emailCliente = document.getElementById('emailCliente').value;
-  const cpfCliente = document.getElementById('cpfCliente').value;
 
-  // Send the data to the server
-  fetch('/admin', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      nome: nomeCliente,
-      email: emailCliente,
-      cpf: cpfCliente
-    })
-  })
-  .then(response => response.json())
-  .then(data => {
-    // Redirect to the payment page
-    window.location.href = '/pagamento';
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-}
 
 </script>
 

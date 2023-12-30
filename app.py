@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 # from pagseguro import PagSeguro
 from flask_migrate import Migrate
 import requests
+import flask_mail
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///clientes.db'

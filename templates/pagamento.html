@@ -19,41 +19,32 @@
             <h2 style="align-items: center;">Pagamento via Pix</h2>
             <p>Escaneie o QR code abaixo para realizar o pagamento:</p>
             <p>Ou utilize o copia e cola a baixo QR code<span class="pix-key"></span></p>
-            <img  style="height: 30%; width: 20%; margin-left: 80px;" src="/static/images/WhatsApp Image 2023-12-22 at 14.44.58.jpeg" alt="">
+            <img  style="height: 30%; width: 20%; margin-left: 270px;" src="/static/images/WhatsApp Image 2023-12-22 at 14.44.58.jpeg" alt="">
 
         </div>
-        <button style="align-items: center; margin-left: 90px;">
+        <button style="align-items: center; margin-left: 270px;">
             Copiar codigo
         </button>
     </section>
-    <section class="payment-section" id="boleto-section">
-        <div>
-            <h2>Pagamento via Boleto</h2>
-            <p>Para pagar via boleto, clique no link abaixo:</p>
-            <a href="#" class="boleto-link">Gerar Boleto</a>
-            <!-- Adicione mais instruções ou formulário de geração de boleto conforme necessário -->
-        </div>
-    </section>
+  
     <section class="payment-section" id="cartao-section">
         <div>
-            <h2>Pagamento via Cartão de Crédito</h2>    
-            <form method="post" name="formCard" id="formCard" action="">
+            <h2>Pagamento via Cartão de Crédito</h2>
+            <button type="button" class="btn btn-primary" onclick="togglePaymentForm()">Pagar com Cartão</button>
+
+            <form method="post" name="formCard" id="formCard" action="" style="display: none;">
                 <div class="col-6 m-auto">
-                    <input type="text" name="publicKey" id="publicKey">
-                    <input type="text" name="encriptedCard" id="encriptedCard">
                     <input type="text" class="form-control" name="cardNumber" id="cardNumber" maxlength="16" placeholder="Número do Cartão">
                     <input type="text" class="form-control" name="cardHolder" id="cardHolder" placeholder="Nome no Cartão">
                     <input type="text" class="form-control" name="cardMonth" id="cardMonth" maxlength="2" placeholder="Mês de Validade do Cartão">
                     <input type="text" class="form-control" name="cardYear" id="cardYear" maxlength="4" placeholder="Ano do Cartão">
                     <input type="text" class="form-control" name="cardCvv" id="cardCvv" maxlength="4" placeholder="CVV do Cartão">
-                    <input type="submit" class="btn btn-primary" value="Pagar">
+                    <input type="submit" class="btn btn-primary" value="Efetue o Pagamento">
                 </div>
             </form>
-
-            </form>
-            </div>
-            
+        </div>
     </section>
+            
 
     <script>
      src="https://assets.pagseguro.com.br/checkout-sdk-js/rc/dist/browser/pagseguro.min.js" 
@@ -106,6 +97,11 @@
                 console.error('Erro:', error);
             });
         });
+
+        function togglePaymentForm() {
+        var form = document.getElementById('formCard');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
     </script>
 </body>
 </html>

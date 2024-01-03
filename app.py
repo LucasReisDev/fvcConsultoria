@@ -1,9 +1,9 @@
-from flask import Flask, render_template, redirect, request, jsonify
+from flask import Flask, render_template, redirect, request, jsonify, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 # from pagseguro import PagSeguro
 from flask_migrate import Migrate
 import requests
-import flask_mail
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///clientes.db'
@@ -11,6 +11,14 @@ db = SQLAlchemy(app)
 # pagseguro = PagSeguro(email='viccari215@gmail.com',
 # token='B73EBD2ACECE64B2245D5FB20A5848C6')
 migrate = Migrate(app, db)
+mail = Mail(app)
+
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com' 
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'fvclimpeseunome@gmail.com'
+app.config['MAIL_PASSWORD'] = 'Sucesso2024$'
 
 
 class Cliente(db.Model):
@@ -143,6 +151,28 @@ def pagamento_credito():
             'success': False,
             'message': 'Erro ao realizar o pagamento.'
         })
+    
+@app.route('/send_email', methods=['POST'])
+def send_email():
+    if request.method == 'POST':
+        sender = request.form['sender']  # Obtém o remetente do formulário
+        recipient = request.form['recipient']
+        subject = request.form['subject']
+        body = request.form['body']
+
+        try:
+            # Cria uma mensagem com o remetente e destinatário dinâmicos
+            message = Message(subject, recipients=[recipient], body=body)
+            message.sender = sender  # Define o remetente dinâmico
+
+            # Envia a mensagem
+            mail.send(message)
+
+            flash('E-mail enviado com sucesso!', 'success')
+        except Exception as e:
+            flash(f'Erro ao enviar e-mail: {str(e)}', 'error')
+
+        return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
